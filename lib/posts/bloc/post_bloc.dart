@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:stream_transform/stream_transform.dart';
 
 part 'post_event.dart';
+
 part 'post_state.dart';
 
 const _postLimit = 20;
@@ -21,7 +22,7 @@ EventTransformer<E> throttleDroppable<E>(Duration duration) {
 }
 
 class PostBloc extends Bloc<PostEvent, PostState> {
-  PostBloc({required this.httpClient}) : super(const PostState()) {
+  PostBloc({required this.httpClient}) : super(PostInitialState()) {
     on<PostEventFetchData>(
       _onPostEventFetchData,
       transformer: throttleDroppable(throttleDuration),
@@ -31,31 +32,31 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   final http.Client httpClient;
 
   Future<void> _onPostEventFetchData(
-    PostEventFetchData event,
-    Emitter<PostState> emit,
-  ) async {
-    if (state.hasReachedMax) return;
+      PostEventFetchData event, Emitter<PostState> emit) async {
+    emit(PostInitialState());
+    bool isFirstTime = true;
     try {
-      if (state.status == PostStatus.initial) {
+      if (isFirstTime) {
         final posts = await _fetchPosts();
-        return emit(
+        isFirstTime = false;
+        return emit(PostLoadedState(
+          posts: posts,
+          hasReachedMax: false,
+        ));
+      }else{
+        final posts = await _fetchPosts(state.posts.length);
+        posts.isEmpty
+            ? emit(state.copyWith(hasReachedMax: true))
+            : emit(
           state.copyWith(
             status: PostStatus.success,
-            posts: posts,
+            posts: List.of(state.posts)..addAll(posts),
             hasReachedMax: false,
           ),
         );
       }
-      final posts = await _fetchPosts(state.posts.length);
-      posts.isEmpty
-          ? emit(state.copyWith(hasReachedMax: true))
-          : emit(
-              state.copyWith(
-                status: PostStatus.success,
-                posts: List.of(state.posts)..addAll(posts),
-                hasReachedMax: false,
-              ),
-            );
+
+
     } catch (_) {
       emit(state.copyWith(status: PostStatus.failure));
     }

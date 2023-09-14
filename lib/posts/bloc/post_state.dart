@@ -1,35 +1,21 @@
 part of 'post_bloc.dart';
 
-enum PostStatus { initial, success, failure }
+abstract class PostState extends Equatable {}
 
-final class PostState extends Equatable {
-  const PostState({
-    this.status = PostStatus.initial,
+class PostInitialState extends PostState {
+  @override
+  List<Object?> get props => throw UnimplementedError();
+}
+
+class PostLoadedState extends PostState {
+  PostLoadedState({
     this.posts = const <Post>[],
     this.hasReachedMax = false,
   });
 
-  final PostStatus status;
   final List<Post> posts;
   final bool hasReachedMax;
 
-  PostState copyWith({
-    PostStatus? status,
-    List<Post>? posts,
-    bool? hasReachedMax,
-  }) {
-    return PostState(
-      status: status ?? this.status,
-      posts: posts ?? this.posts,
-      hasReachedMax: hasReachedMax ?? this.hasReachedMax,
-    );
-  }
-
   @override
-  String toString() {
-    return '''PostState { status: $status, hasReachedMax: $hasReachedMax, posts: ${posts.length} }''';
-  }
-
-  @override
-  List<Object> get props => [status, posts, hasReachedMax];
+  List<Object> get props => [posts, hasReachedMax];
 }
