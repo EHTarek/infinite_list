@@ -2,6 +2,7 @@ import 'package:infinite_list/api/repository/api_repository.dart';
 import 'package:infinite_list/bloc/api/api_event.dart';
 import 'package:infinite_list/bloc/api/api_state.dart';
 import 'package:bloc/bloc.dart';
+import 'package:infinite_list/model/airline_data_model.dart';
 
 class ApiBloc extends Bloc<ApiEvent, ApiState> {
   ApiBloc() : super(ApiStateInitial()) {
@@ -12,7 +13,7 @@ class ApiBloc extends Bloc<ApiEvent, ApiState> {
       ApiEventGetAirlineList event, Emitter<ApiState> emit) async {
     final ApiRepository apiRepository = ApiRepository();
     try {
-      final mList =
+      AirlineDataModel mList =
           await apiRepository.fetchAirlineData(event.page, event.size);
 
       if (mList.totalPages != 0 && mList.totalPassengers != 0) {
