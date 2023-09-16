@@ -14,29 +14,29 @@ class HomeScreen extends StatelessWidget {
         appBar: AppBar(
           title: const Text('App Title'),
         ),
-        body: const MainFragmentContainer());
+        body: const HomeScrollListView());
   }
 }
 
-class MainFragmentContainer extends StatefulWidget {
-  const MainFragmentContainer({super.key});
+class HomeScrollListView extends StatefulWidget {
+  const HomeScrollListView({super.key});
 
   @override
-  MainFragmentContainerState createState() => MainFragmentContainerState();
+  HomeScrollListViewState createState() => HomeScrollListViewState();
 }
 
-class MainFragmentContainerState extends State<MainFragmentContainer> {
+class HomeScrollListViewState extends State<HomeScrollListView> {
   final _size = 10;
-
   bool _canLoadMore = false;
   int _page = 0;
-
   final List<DataResultModel> _dataAirline = [];
   final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
-    context.read<ApiBloc>().add(ApiEventGetAirlineList(page: _page, size: _size));
+    context
+        .read<ApiBloc>()
+        .add(ApiEventGetAirlineList(page: _page, size: _size));
     super.initState();
   }
 
@@ -59,21 +59,24 @@ class MainFragmentContainerState extends State<MainFragmentContainer> {
         }
         if (listState is ApiStateLoaded) {
           if (_dataAirline.isNotEmpty == true) {
-            _dataAirline.removeAt(
-                _dataAirline.length - 1); // remove circular progress
+            _dataAirline
+                .removeAt(_dataAirline.length - 1); // remove circular progress
           }
 
           listState.listAirline.data.asMap().forEach((key, value) {
             _dataAirline.add(value);
           });
-          // _dataAirline.add(Datum()); // for circular item at the end of list
+          _dataAirline.add(DataResultModel(
+            id: '',
+            name: '',
+            trips: 0,
+            airline: [],
+            v: 0,
+          )); // for circular item at the end of list
 
           _canLoadMore = true;
 
-          return _buildContentView(context, _dataAirline.cast<DataResultModel>());
-        }
-        if (listState is ApiStateError) {
-          return _buildEmptyView();
+          return _buildContentView(context, _dataAirline);
         }
         return _buildEmptyView();
       },
@@ -99,7 +102,8 @@ class MainFragmentContainerState extends State<MainFragmentContainer> {
   Widget LoadingView() => const Center(child: CircularProgressIndicator());
 
   // if list is exist, show this view
-  Widget _buildContentView(BuildContext context, List<DataResultModel>? listAirline) {
+  Widget _buildContentView(
+      BuildContext context, List<DataResultModel>? listAirline) {
     return Column(
       children: [_buildBodyList(listAirline)],
     );
@@ -115,7 +119,9 @@ class MainFragmentContainerState extends State<MainFragmentContainer> {
               _canLoadMore = true;
               _page = 0;
               _dataAirline.clear();
-              context.read<ApiBloc>().add(ApiEventGetAirlineList(page: _page, size: _size));
+              context
+                  .read<ApiBloc>()
+                  .add(ApiEventGetAirlineList(page: _page, size: _size));
             });
           });
         },
@@ -143,7 +149,9 @@ class MainFragmentContainerState extends State<MainFragmentContainer> {
                 setState(() {
                   _page = _page + 1;
                   _canLoadMore = false;
-                  context.read<ApiBloc>().add(ApiEventGetAirlineList(page: _page, size: _size));
+                  context
+                      .read<ApiBloc>()
+                      .add(ApiEventGetAirlineList(page: _page, size: _size));
                 });
               }
             }),
