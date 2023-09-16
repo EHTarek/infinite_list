@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:infinite_list/model/DataResultModel.dart';
+import 'package:infinite_list/model/data_result_model.dart';
 
 AirlineDataModel airlineDataModelFromJson(String str) =>
     AirlineDataModel.fromJson(json.decode(str));

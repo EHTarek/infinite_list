@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:infinite_list/bloc/api/api_bloc.dart';
 import 'package:infinite_list/bloc/api/api_event.dart';
 import 'package:infinite_list/bloc/api/api_state.dart';
-import 'package:infinite_list/model/DataResultModel.dart';
+import 'package:infinite_list/model/data_result_model.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
