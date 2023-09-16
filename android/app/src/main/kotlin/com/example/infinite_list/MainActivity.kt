@@ -1,4 +1,4 @@
-package com.example.infinite_list
+package com.tariqul.infinite_list
 
 import io.flutter.embedding.android.FlutterActivity
 
