@@ -41,6 +41,7 @@ dependencies:
   http:
   stream_transform:
   bloc_concurrency:
+  get_it: ^7.6.4
 
 
 dev_dependencies:
